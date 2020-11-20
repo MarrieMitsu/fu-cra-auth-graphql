@@ -1,12 +1,12 @@
 // Packages
-import { Box, Container, Grid, Hidden, Paper, TextField, Button, Link, Typography } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import React from "react";
 import Navbar from "../components/Navbar";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
 import { Link as LinkRouter } from "react-router-dom";
 
 // useStyles
-const useStyles = makeStyles((theme: Theme) => 
+const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         grid: {
             marginTop: 100,
@@ -26,15 +26,15 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-// Login
-const Login: React.FC = () => {
+// ForgotPassword
+const ForgotPassword: React.FC = () => {
     const classes = useStyles();
 
     return (
         <>
             <Navbar />
             <Container maxWidth="md">
-                <Grid 
+                <Grid
                     className={classes.grid}
                     container
                     direction="row"
@@ -45,21 +45,10 @@ const Login: React.FC = () => {
                         <Paper
                             className={classes.formBox}
                         >
-                            <TextField 
-                                error={false}
-                                label="Username or email"
-                                type="text"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                color="primary"
-                                helperText=""
-                            />
-                            <Box py={1} />
                             <TextField
                                 error={false}
-                                label="Password"
-                                type="password"
+                                label="Email"
+                                type="email"
                                 variant="outlined"
                                 size="small"
                                 fullWidth
@@ -69,19 +58,12 @@ const Login: React.FC = () => {
                             <Box py={1} />
                             <Grid container>
                                 <Grid item xs>
+                                    Already have an account?
                                     <Link
                                         component={LinkRouter}
-                                        to="/register"
+                                        to="/login"
                                     >
-                                        Register
-                                    </Link>
-                                </Grid>
-                                <Grid item xs className={classes.textRight}>
-                                    <Link
-                                        component={LinkRouter}
-                                        to="/forgot-password"
-                                    >
-                                        Forgot password
+                                        Login
                                     </Link>
                                 </Grid>
                             </Grid>
@@ -92,19 +74,19 @@ const Login: React.FC = () => {
                                 disableElevation
                                 fullWidth
                             >
-                                Login
+                                Reset password
                             </Button>
                         </Paper>
                     </Grid>
                     <Hidden xsDown>
                         <Grid item xs>
                             <Box className={classes.bannerBox}>
-                                <Typography 
-                                    align="center" 
-                                    variant="h2" 
+                                <Typography
+                                    align="center"
+                                    variant="h2"
                                     color="primary"
                                 >
-                                    Login
+                                    Forgot Password
                                 </Typography>
                             </Box>
                         </Grid>
@@ -116,4 +98,4 @@ const Login: React.FC = () => {
 }
 
 // Export
-export default Login;
+export default ForgotPassword;

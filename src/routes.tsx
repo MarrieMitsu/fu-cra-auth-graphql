@@ -1,6 +1,8 @@
 // Packages
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import ForgotPassword from "./pages/ForgotPassword";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -13,6 +15,8 @@ const Router: React.FC = () => {
                 <Route exact path="/" component={Home} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
+                <Route exact path="/forgot-password" component={ForgotPassword} />
+                <Route exact path="/dashboard" component={Dashboard} />
             </Switch>
         </BrowserRouter>
     );
