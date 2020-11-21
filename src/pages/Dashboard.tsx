@@ -1,11 +1,11 @@
 // Packages
+import { Container, Divider, Tab, Tabs } from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import { Container, Tabs, Tab, Divider } from "@material-ui/core";
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-import TabPanel from "../components/TabPanel";
 import DashboardHome from "../components/DashboardHome";
 import DashboardProfile from "../components/DashboardProfile";
+import Navbar from "../components/Navbar";
+import TabPanel from "../components/TabPanel";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) => 

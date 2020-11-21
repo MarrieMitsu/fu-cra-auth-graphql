@@ -1,9 +1,9 @@
 // Packages
-import { Box, Container, Grid, Hidden, Paper, TextField, Button, Link, Typography } from "@material-ui/core";
+import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import React from "react";
-import Navbar from "../components/Navbar";
 import { Link as LinkRouter } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) => 

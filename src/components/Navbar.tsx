@@ -1,10 +1,10 @@
 // Packages
-import { AppBar, Box, Button, Dialog, DialogContent, DialogTitle, Hidden, IconButton, List, ListItem, Slide, Toolbar, Typography, ListItemText, ListItemIcon, Menu, MenuItem, Divider } from "@material-ui/core";
+import { AppBar, Box, Button, Dialog, DialogContent, DialogTitle, Divider, Hidden, IconButton, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { TransitionProps } from "@material-ui/core/transitions/transition";
-import { Close as CloseIcon, Menu as MenuIcon, Link as LinkIcon, AccountCircle as AccountCircleIcon } from "@material-ui/icons";
+import { AccountCircle as AccountCircleIcon, Close as CloseIcon, Link as LinkIcon, Menu as MenuIcon } from "@material-ui/icons";
 import React, { useState } from "react";
 import { Link as LinkRouter } from "react-router-dom";
+import { SlideTransition } from "../utils/customTransition";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) => 
@@ -27,22 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-// Transition
-const Transition = React.forwardRef((
-    props: TransitionProps & { children?: React.ReactElement<any, any> },
-    ref: React.Ref<unknown>
-) => {
-    return (
-        <Slide
-            direction="left"
-            timeout={2000}
-            ref={ref} {...props}
-        />
-    );
-});
-
 // Props
-type NavbarProps = {
+interface NavbarProps {
     login?: boolean;
 }
 
@@ -133,7 +119,7 @@ const Navbar: React.FC<NavbarProps> = ({login}) => {
                         fullScreen
                         open={open}
                         onClose={handleNavDialog}
-                        TransitionComponent={Transition}
+                        TransitionComponent={SlideTransition}
                     >
                         <DialogTitle className={classes.dialogTitle}>
                             <IconButton

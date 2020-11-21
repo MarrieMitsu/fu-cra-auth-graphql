@@ -1,6 +1,6 @@
 // Packages
-import React from "react";
 import { Box } from "@material-ui/core";
+import React from "react";
 
 // Prop
 type TabPanelProps = {

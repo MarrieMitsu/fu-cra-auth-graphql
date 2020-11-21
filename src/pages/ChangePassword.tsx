@@ -1,8 +1,7 @@
 // Packages
-import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
+import { Box, Button, Container, Grid, Hidden, Paper, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import React from "react";
-import { Link as LinkRouter } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 // useStyles
@@ -26,8 +25,8 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-// ForgotPassword
-const ForgotPassword: React.FC = () => {
+// ChangePassword
+const ChangePassword: React.FC = () => {
     const classes = useStyles();
 
     return (
@@ -47,8 +46,8 @@ const ForgotPassword: React.FC = () => {
                         >
                             <TextField
                                 error={false}
-                                label="Email"
-                                type="email"
+                                label="New password"
+                                type="password"
                                 variant="outlined"
                                 size="small"
                                 fullWidth
@@ -56,17 +55,16 @@ const ForgotPassword: React.FC = () => {
                                 helperText=""
                             />
                             <Box py={1} />
-                            <Grid container>
-                                <Grid item xs>
-                                    Already have an account?
-                                    <Link
-                                        component={LinkRouter}
-                                        to="/login"
-                                    >
-                                        Login
-                                    </Link>
-                                </Grid>
-                            </Grid>
+                            <TextField
+                                error={false}
+                                label="Confirm new password"
+                                type="password"
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                color="primary"
+                                helperText=""
+                            />
                             <Box py={2} />
                             <Button
                                 color="secondary"
@@ -74,7 +72,7 @@ const ForgotPassword: React.FC = () => {
                                 disableElevation
                                 fullWidth
                             >
-                                Reset password
+                                Change password
                             </Button>
                         </Paper>
                     </Grid>
@@ -86,7 +84,7 @@ const ForgotPassword: React.FC = () => {
                                     variant="h2"
                                     color="primary"
                                 >
-                                    Forgot Password
+                                    Change password
                                 </Typography>
                             </Box>
                         </Grid>
@@ -97,5 +95,5 @@ const ForgotPassword: React.FC = () => {
     );
 }
 
-// Export
-export default ForgotPassword;
+// Exports
+export default ChangePassword;

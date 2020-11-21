@@ -1,8 +1,8 @@
 // Packages
+import { Container, Grid, Typography } from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import React from "react";
 import Navbar from "../components/Navbar";
-import { Container, Grid, Typography } from "@material-ui/core";
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) => 

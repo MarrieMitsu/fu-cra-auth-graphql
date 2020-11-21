@@ -1,12 +1,13 @@
 // Packages
-import { Avatar, Box, ButtonBase, Grid, IconButton, Tooltip, Dialog, Card, CardMedia, Divider, Tabs, Tab } from "@material-ui/core";
+import { Avatar, Box, ButtonBase, Card, CardMedia, Dialog, Divider, Grid, Hidden, IconButton, Tab, Tabs, Tooltip } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { PhotoCamera as PhotoCameraIcon } from "@material-ui/icons";
 import React, { useState } from "react";
-import TabPanel from "./TabPanel";
-import ProfileGeneral from "./ProfileGeneral";
-import ProfileDangerZone from "./ProfileDangerZone";
+import { ZoomTransition } from "../utils/customTransition";
 import ProfileChangePassword from "./ProfileChangePassword";
+import ProfileDangerZone from "./ProfileDangerZone";
+import ProfileGeneral from "./ProfileGeneral";
+import TabPanel from "./TabPanel";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -36,8 +37,17 @@ const useStyles = makeStyles((theme: Theme) =>
         fullWidth: {
             width: "100%",
         },
+        infoBox: {
+            flexDirection: "column",
+            [theme.breakpoints.up("sm")]: {
+                flexDirection: "row"
+            }
+        },
         verticalTabs: {
             borderRight: `1px solid ${theme.palette.divider}`,
+            [theme.breakpoints.down("sm")]: {
+                borderRight: "none",
+            },
         },
         grow: {
             flexGrow: 1,
@@ -48,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) =>
 // DashboardProfile
 const DashboardProfile: React.FC = () => {
     const classes = useStyles();
-    const [photoDialog, setPhotoDialog] = useState(false);
+    const [photoDialog, setPhotoDialog] = useState<boolean>(false);
     const [indicator, setIndicator] = useState<number>(0);
 
     const handlePhotoDialog = () => setPhotoDialog(!photoDialog);
@@ -81,6 +91,7 @@ const DashboardProfile: React.FC = () => {
                     <Dialog
                         open={photoDialog}
                         onClose={handlePhotoDialog}
+                        TransitionComponent={ZoomTransition}
                     >
                         <Card>
                             <CardMedia
@@ -106,21 +117,37 @@ const DashboardProfile: React.FC = () => {
                 <Box mt={4}>
                     <Grid 
                         container
-                        direction="row"
+                        className={classes.infoBox}
                     >
                         <Grid item>
-                            <Tabs
-                                className={classes.verticalTabs}
-                                orientation="vertical"
-                                variant="scrollable"
-                                textColor="secondary"
-                                value={indicator}
-                                onChange={handleIndicator}
-                            >
-                                <Tab label="General" />
-                                <Tab label="Change Password" />
-                                <Tab label="Danger Zone" />
-                            </Tabs>
+                            <Hidden smUp>
+                                <Tabs
+                                    className={classes.verticalTabs}
+                                    orientation="horizontal"
+                                    variant="scrollable"
+                                    textColor="secondary"
+                                    value={indicator}
+                                    onChange={handleIndicator}
+                                >
+                                    <Tab label="General" />
+                                    <Tab label="Change Password" />
+                                    <Tab label="Danger Zone" />
+                                </Tabs>
+                            </Hidden>
+                            <Hidden smDown>
+                                <Tabs
+                                    className={classes.verticalTabs}
+                                    orientation="vertical"
+                                    variant="scrollable"
+                                    textColor="secondary"
+                                    value={indicator}
+                                    onChange={handleIndicator}
+                                >
+                                    <Tab label="General" />
+                                    <Tab label="Change Password" />
+                                    <Tab label="Danger Zone" />
+                                </Tabs>
+                            </Hidden>
                         </Grid>
                         <Grid 
                             item
