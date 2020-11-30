@@ -1,8 +1,9 @@
 // Packages
 import { Box, Button, Grid, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Formik, FormikHelpers } from "formik";
 import React from "react";
-import { useFormik } from "formik";
+import * as Yup from "yup";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -30,91 +31,109 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
+// Props
+interface Values {
+    fullname: string;
+    username: string;
+    email: string;
+}
+
 // ProfileGeneral
 const ProfileGeneral: React.FC = () => {
     const classes = useStyles();
-    const formik = useFormik({
-        initialValues: {
-            fullname: "Hatako Kushikawa",
-            username: "Hatako",
-            email: "hatako@protonmail.com",
-        },
-        onSubmit: (val) => {
-            console.log(val);
-        }
-    });
-
+    
     return (
         <>
             <Typography variant="h5">
                 General
             </Typography>
             <Box mt={3} className={classes.box}>
-                <form onSubmit={formik.handleSubmit}>
-                    <TextField
-                        error={formik.touched.fullname && Boolean(formik.errors.fullname)}
-                        label="Fullname"
-                        name="fullname"
-                        type="text"
-                        value={formik.values.fullname}
-                        onChange={formik.handleChange}
-                        fullWidth
-                        variant="outlined"
-                        size="small"
-                        color="primary"
-                        helperText={formik.touched.fullname && formik.errors.fullname}
-                    />
-                    <Box py={2} />
-                    <TextField 
-                        error={false}
-                        label="Username"
-                        type="text"
-                        value={formik.values.username}
-                        fullWidth
-                        variant="outlined"
-                        size="small"
-                        color="primary"
-                        disabled
-                    />
-                    <Box py={2} />
-                    <TextField
-                        error={false}
-                        label="Email"
-                        type="email"
-                        value={formik.values.email}
-                        fullWidth
-                        variant="outlined"
-                        size="small"
-                        color="primary"
-                        disabled
-                    />
-                    <Box py={2} />
-                    <Grid
-                        container
-                        direction="row"
-                        spacing={3}
-                    >
-                        <Grid item>
-                            <Button
-                                className={classes.success}
-                                variant="contained"
-                                type="submit"
-                                disableElevation
+                <Formik
+                    initialValues={{
+                        fullname: "Hatako Kushikawa",
+                        username: "Hatako",
+                        email: "hatako@protonmail.com",
+                    }}
+                    validationSchema={Yup.object({
+                        fullname: Yup.string().required("required"),
+                        username: Yup.string().required("required"),
+                        email: Yup.string().email("Format must be an email").required("required"),
+                    })}
+                    onSubmit={(
+                        val: Values,
+                        { setSubmitting }: FormikHelpers<Values>
+                    ) => {
+                        console.log("Submit data: ", val);
+                    }}
+                >
+                    {formik => (
+                        <form onSubmit={formik.handleSubmit}>
+                            <TextField
+                                label="Fullname"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                color="primary"
+                                {...formik.getFieldProps('fullname')}
+                                error={formik.touched.fullname && Boolean(formik.errors.fullname)}
+                                helperText={formik.touched.fullname && formik.errors.fullname}
+                            />
+                            <Box py={2} />
+                            <TextField
+                                label="Username"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                color="primary"
+                                {...formik.getFieldProps('username')}
+                                error={Boolean(formik.errors.username)}
+                                helperText={formik.touched.username && formik.errors.username}
+                                disabled
+                            />
+                            <Box py={2} />
+                            <TextField
+                                label="Email"
+                                type="email"
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                color="primary"
+                                {...formik.getFieldProps('email')}
+                                error={Boolean(formik.errors.email)}
+                                helperText={formik.touched.email && formik.errors.email}
+                                disabled
+                            />
+                            <Box py={2} />
+                            <Grid
+                                container
+                                direction="row"
+                                spacing={3}
                             >
-                                Update
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                className={classes.error}
-                                variant="contained"
-                                disableElevation
-                            >
-                                Restore Change
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </form>
+                                <Grid item>
+                                    <Button
+                                        className={classes.success}
+                                        variant="contained"
+                                        type="submit"
+                                        disableElevation
+                                    >
+                                        Update
+                                    </Button>
+                                </Grid>
+                                <Grid item>
+                                    <Button
+                                        className={classes.error}
+                                        variant="contained"
+                                        disableElevation
+                                    >
+                                        Restore Change
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </form>
+                    )}
+                </Formik>
             </Box>
         </>
     );

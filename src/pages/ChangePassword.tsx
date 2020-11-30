@@ -1,9 +1,10 @@
 // Packages
 import { Box, Button, Container, Grid, Hidden, Paper, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Formik, FormikHelpers } from "formik";
 import React from "react";
+import * as Yup from "yup";
 import Navbar from "../components/Navbar";
-import { useFormik } from "formik";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -26,18 +27,15 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
+// Props
+interface Values {
+    newPassword: string;
+    confirmNewPassword: string;
+}
+
 // ChangePassword
 const ChangePassword: React.FC = () => {
     const classes = useStyles();
-    const formik = useFormik({
-        initialValues: {
-            newPassword: "",
-            confirmNewPassword: "",
-        },
-        onSubmit: (val) => {
-            console.log("Submit data: ", val);
-        }
-    });
 
     return (
         <>
@@ -54,45 +52,60 @@ const ChangePassword: React.FC = () => {
                         <Paper
                             className={classes.formBox}
                         >
-                            <form onSubmit={formik.handleSubmit}>
-                                <TextField
-                                    error={formik.touched.newPassword && Boolean(formik.errors.newPassword)}
-                                    label="New password"
-                                    name="newPassword"
-                                    type="password"
-                                    value={formik.values.newPassword}
-                                    onChange={formik.handleChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    color="primary"
-                                    helperText={formik.touched.newPassword && formik.errors.newPassword}
-                                />
-                                <Box py={1} />
-                                <TextField
-                                    error={formik.touched.confirmNewPassword && Boolean(formik.errors.confirmNewPassword)}
-                                    label="Confirm new password"
-                                    name="confirmNewPassword"
-                                    type="password"
-                                    value={formik.values.confirmNewPassword}
-                                    onChange={formik.handleChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    color="primary"
-                                    helperText={formik.touched.confirmNewPassword && formik.errors.confirmNewPassword}
-                                />
-                                <Box py={2} />
-                                <Button
-                                    color="secondary"
-                                    variant="contained"
-                                    type="submit"
-                                    disableElevation
-                                    fullWidth
-                                >
-                                    Change password
-                                </Button>
-                            </form>
+                            <Formik
+                                initialValues={{
+                                    newPassword: "",
+                                    confirmNewPassword: ""
+                                }}
+                                validationSchema={Yup.object({
+                                    newPassword: Yup.string().required("required"),
+                                    confirmNewPassword: Yup.string().required("required")
+                                })}
+                                onSubmit={(
+                                    val: Values,
+                                    { setSubmitting }: FormikHelpers<Values>
+                                ) => {
+                                    console.log("Submit data: ", val);
+                                }}
+                            >
+                                {formik => (
+                                    <form onSubmit={formik.handleSubmit}>
+                                        <TextField
+                                            label="New password"
+                                            type="password"
+                                            variant="outlined"
+                                            size="small"
+                                            fullWidth
+                                            color="primary"
+                                            {...formik.getFieldProps('newPassword')}
+                                            error={formik.touched.newPassword && Boolean(formik.errors.newPassword)}
+                                            helperText={formik.touched.newPassword && formik.errors.newPassword}
+                                        />
+                                        <Box py={1} />
+                                        <TextField
+                                            label="Confirm new password"
+                                            type="password"
+                                            variant="outlined"
+                                            size="small"
+                                            fullWidth
+                                            color="primary"
+                                            {...formik.getFieldProps('confirmNewPassword')}
+                                            error={formik.touched.confirmNewPassword && Boolean(formik.errors.confirmNewPassword)}
+                                            helperText={formik.touched.confirmNewPassword && formik.errors.confirmNewPassword}
+                                        />
+                                        <Box py={2} />
+                                        <Button
+                                            color="secondary"
+                                            variant="contained"
+                                            type="submit"
+                                            disableElevation
+                                            fullWidth
+                                        >
+                                            Change password
+                                        </Button>
+                                    </form>
+                                )}
+                            </Formik>
                         </Paper>
                     </Grid>
                     <Hidden xsDown>

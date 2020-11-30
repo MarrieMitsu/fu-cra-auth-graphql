@@ -23,11 +23,12 @@
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
-    "typescript": "^4.0.3",
-    "web-vitals": "^0.2.4"
+    "typescript": "^4.0.5",
+    "web-vitals": "^0.2.4",
+    "yup": "^0.31.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "del tsconfig.json && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -53,6 +54,7 @@
   "devDependencies": {
     "@types/graphql": "^14.5.0",
     "@types/jwt-decode": "^3.1.0",
-    "@types/react-router-dom": "^5.1.6"
+    "@types/react-router-dom": "^5.1.6",
+    "@types/yup": "^0.29.9"
   }
 }

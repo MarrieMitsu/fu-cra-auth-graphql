@@ -4,7 +4,8 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import React from "react";
 import { Link as LinkRouter } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { useFormik } from "formik";
+import { Formik, FormikHelpers } from "formik";
+import * as Yup from "yup";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -27,17 +28,14 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
+// Props
+interface Values {
+    email: string;
+}
+
 // ForgotPassword
 const ForgotPassword: React.FC = () => {
     const classes = useStyles();
-    const formik = useFormik({
-        initialValues: {
-            email: "",
-        },
-        onSubmit: (val) => {
-            console.log("Submit data: ", val);
-        }
-    });
 
     return (
         <>
@@ -54,43 +52,58 @@ const ForgotPassword: React.FC = () => {
                         <Paper
                             className={classes.formBox}
                         >   
-                            <form onSubmit={formik.handleSubmit}>
-                                <TextField
-                                    error={formik.touched.email && Boolean(formik.errors.email)}
-                                    label="Email"
-                                    name="email"
-                                    type="email"
-                                    value={formik.values.email}
-                                    onChange={formik.handleChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    color="primary"
-                                    helperText={formik.touched.email && formik.errors.email}
-                                />
-                                <Box py={1} />
-                                <Grid container>
-                                    <Grid item xs>
-                                        Already have an account?
-                                        <Link
-                                            component={LinkRouter}
-                                            to="/login"
+                            <Formik
+                                initialValues={{
+                                    email: "",
+                                }}
+                                validationSchema={Yup.object({
+                                    email: Yup.string().email("Format must be an email").required("required")
+                                })}
+                                onSubmit={(
+                                    val: Values,
+                                    { setSubmitting }: FormikHelpers<Values>
+                                ) => {
+                                    console.log("Submit data: ", val);
+                                }}
+                            >
+                                {formik => (
+                                    <form onSubmit={formik.handleSubmit}>
+                                        <TextField
+                                            label="Email"
+                                            type="email"
+                                            variant="outlined"
+                                            size="small"
+                                            fullWidth
+                                            color="primary"
+                                            {...formik.getFieldProps('email')}
+                                            error={formik.touched.email && Boolean(formik.errors.email)}
+                                            helperText={formik.touched.email && formik.errors.email}
+                                        />
+                                        <Box py={1} />
+                                        <Grid container>
+                                            <Grid item xs>
+                                                Already have an account?
+                                                <Link
+                                                    component={LinkRouter}
+                                                    to="/login"
+                                                >
+                                                    Login
+                                                </Link>
+                                            </Grid>
+                                        </Grid>
+                                        <Box py={2} />
+                                        <Button
+                                            color="secondary"
+                                            variant="contained"
+                                            type="submit"
+                                            disableElevation
+                                            fullWidth
                                         >
-                                            Login
-                                        </Link>
-                                    </Grid>
-                                </Grid>
-                                <Box py={2} />
-                                <Button
-                                    color="secondary"
-                                    variant="contained"
-                                    type="submit"
-                                    disableElevation
-                                    fullWidth
-                                >
-                                    Reset password
-                                </Button>
-                            </form>
+                                            Reset password
+                                        </Button>
+                                    </form>
+                                )}
+                            </Formik>
                         </Paper>
                     </Grid>
                     <Hidden xsDown>

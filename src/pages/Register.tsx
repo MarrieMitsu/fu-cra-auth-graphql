@@ -1,10 +1,11 @@
 // Packages
 import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Formik, FormikHelpers } from "formik";
 import React from "react";
 import { Link as LinkRouter } from "react-router-dom";
+import * as Yup from "yup";
 import Navbar from "../components/Navbar";
-import { useFormik } from "formik";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -27,20 +28,17 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
+// Props
+interface Values {
+    fullname: string;
+    username: string;
+    email: string;
+    password: string;
+}
+
 // Register
 const Register: React.FC = () => {
     const classes = useStyles();
-    const formik = useFormik({
-        initialValues: {
-            fullname: "",
-            username: "",
-            email: "",
-            password: "",
-        },
-        onSubmit: (val) => {
-            console.log("Submit data: ", val);
-        }
-    });
 
     return (
         <>
@@ -57,85 +55,100 @@ const Register: React.FC = () => {
                         <Paper
                             className={classes.formBox}
                         >
-                            <form onSubmit={formik.handleSubmit}>
-                                <TextField
-                                    error={formik.touched.fullname && Boolean(formik.errors.fullname)}
-                                    label="Fullname"
-                                    name="fullname"
-                                    type="text"
-                                    value={formik.values.fullname}
-                                    onChange={formik.handleChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    color="primary"
-                                    helperText={formik.touched.fullname && formik.errors.fullname}
-                                />
-                                <Box py={1} />
-                                <TextField
-                                    error={formik.touched.username && Boolean(formik.errors.username)}
-                                    label="Username"
-                                    name="username"
-                                    type="text"
-                                    value={formik.values.username}
-                                    onChange={formik.handleChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    color="primary"
-                                    helperText={formik.touched.username && formik.errors.username}
-                                />
-                                <Box py={1} />
-                                <TextField
-                                    error={formik.touched.email && Boolean(formik.errors.email)}
-                                    label="Email"
-                                    name="email"
-                                    type="email"
-                                    value={formik.values.email}
-                                    onChange={formik.handleChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    color="primary"
-                                    helperText={formik.touched.email && formik.errors.email}
-                                />
-                                <Box py={1} />
-                                <TextField
-                                    error={formik.touched.password && Boolean(formik.errors.password)}
-                                    label="Password"
-                                    name="password"
-                                    type="password"
-                                    value={formik.values.password}
-                                    onChange={formik.handleChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    color="primary"
-                                    helperText={formik.touched.password && formik.errors.password}
-                                />
-                                <Box py={1} />
-                                <Grid container>
-                                    <Grid item xs>
-                                        Already have an account?
-                                        <Link
-                                            component={LinkRouter}
-                                            to="/login"
+                            <Formik
+                                initialValues={{
+                                    fullname: "",
+                                    username: "",
+                                    email: "",
+                                    password: "",
+                                }}
+                                validationSchema={Yup.object({
+                                    fullname: Yup.string().required("required"),
+                                    username: Yup.string().required("required"),
+                                    email: Yup.string().email("Format must be an email").required("required"),
+                                    password: Yup.string().required("required"),
+                                })}
+                                onSubmit={(
+                                    val: Values,
+                                    { setSubmitting }: FormikHelpers<Values>
+                                ) => {
+                                    console.log("Submit data: ", val);
+                                }}
+                            >
+                                {formik => (
+                                    <form onSubmit={formik.handleSubmit}>
+                                        <TextField
+                                            label="Fullname"
+                                            type="text"
+                                            variant="outlined"
+                                            size="small"
+                                            fullWidth
+                                            color="primary"
+                                            {...formik.getFieldProps('fullname')}
+                                            error={formik.touched.fullname && Boolean(formik.errors.fullname)}
+                                            helperText={formik.touched.fullname && formik.errors.fullname}
+                                        />
+                                        <Box py={1} />
+                                        <TextField
+                                            label="Username"
+                                            type="text"
+                                            variant="outlined"
+                                            size="small"
+                                            fullWidth
+                                            color="primary"
+                                            {...formik.getFieldProps('username')}
+                                            error={formik.touched.username && Boolean(formik.errors.username)}
+                                            helperText={formik.touched.username && formik.errors.username}
+                                        />
+                                        <Box py={1} />
+                                        <TextField
+                                            label="Email"
+                                            type="email"
+                                            variant="outlined"
+                                            size="small"
+                                            fullWidth
+                                            color="primary"
+                                            {...formik.getFieldProps('email')}
+                                            error={formik.touched.email && Boolean(formik.errors.email)}
+                                            helperText={formik.touched.email && formik.errors.email}
+                                        />
+                                        <Box py={1} />
+                                        <TextField
+                                            label="Password"
+                                            type="password"
+                                            variant="outlined"
+                                            size="small"
+                                            fullWidth
+                                            color="primary"
+                                            {...formik.getFieldProps('password')}
+                                            error={formik.touched.password && Boolean(formik.errors.password)}
+                                            helperText={formik.touched.password && formik.errors.password}
+                                        />
+                                        <Box py={1} />
+                                        <Grid container>
+                                            <Grid item xs>
+                                                Already have an account?
+                                                <Link
+                                                    component={LinkRouter}
+                                                    to="/login"
+                                                >
+                                                    Login
+                                                </Link>
+                                            </Grid>
+                                        </Grid>
+                                        <Box py={2} />
+                                        <Button
+                                            color="secondary"
+                                            variant="contained"
+                                            type="submit"
+                                            disableElevation
+                                            fullWidth
                                         >
-                                            Login
-                                        </Link>
-                                    </Grid>
-                                </Grid>
-                                <Box py={2} />
-                                <Button
-                                    color="secondary"
-                                    variant="contained"
-                                    type="submit"
-                                    disableElevation
-                                    fullWidth
-                                >
-                                    Register
-                                </Button>
-                            </form>
+                                            Register
+                                        </Button>
+                                    </form>
+                                )}
+                            </Formik>
                         </Paper>
                     </Grid>
                     <Hidden xsDown>
