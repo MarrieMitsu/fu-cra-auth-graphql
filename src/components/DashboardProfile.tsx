@@ -8,6 +8,7 @@ import ProfileChangePassword from "./ProfileChangePassword";
 import ProfileDangerZone from "./ProfileDangerZone";
 import ProfileGeneral from "./ProfileGeneral";
 import TabPanel from "./TabPanel";
+// import { useFormik } from "formik";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -58,6 +59,14 @@ const useStyles = makeStyles((theme: Theme) =>
 // DashboardProfile
 const DashboardProfile: React.FC = () => {
     const classes = useStyles();
+    // const formik = useFormik({
+    //     initialValues: {
+    //         photo: "",
+    //     },
+    //     onSubmit: (val) => {
+    //         console.log(val);
+    //     }
+    // });
     const [photoDialog, setPhotoDialog] = useState<boolean>(false);
     const [indicator, setIndicator] = useState<number>(0);
 
@@ -99,7 +108,13 @@ const DashboardProfile: React.FC = () => {
                             />
                         </Card>
                     </Dialog>
-                    <input accept="image/*" hidden id="photo-button" type="file" />
+                    <input 
+                        name="photo"
+                        accept="image/*" 
+                        hidden 
+                        id="photo-button" 
+                        type="file" 
+                    />
                     <label htmlFor="photo-button">
                         <Tooltip title="Change photo">
                             <IconButton

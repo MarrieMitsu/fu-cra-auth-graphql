@@ -4,6 +4,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import React from "react";
 import { Link as LinkRouter } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { useFormik } from "formik";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -29,6 +30,17 @@ const useStyles = makeStyles((theme: Theme) =>
 // Register
 const Register: React.FC = () => {
     const classes = useStyles();
+    const formik = useFormik({
+        initialValues: {
+            fullname: "",
+            username: "",
+            email: "",
+            password: "",
+        },
+        onSubmit: (val) => {
+            console.log("Submit data: ", val);
+        }
+    });
 
     return (
         <>
@@ -45,70 +57,85 @@ const Register: React.FC = () => {
                         <Paper
                             className={classes.formBox}
                         >
-                            <TextField
-                                error={false}
-                                label="Fullname"
-                                type="text"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                color="primary"
-                                helperText=""
-                            />
-                            <Box py={1} />
-                            <TextField
-                                error={false}
-                                label="Username"
-                                type="text"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                color="primary"
-                                helperText=""
-                            />
-                            <Box py={1} />
-                            <TextField
-                                error={false}
-                                label="Email"
-                                type="email"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                color="primary"
-                                helperText=""
-                            />
-                            <Box py={1} />
-                            <TextField
-                                error={false}
-                                label="Password"
-                                type="password"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                color="primary"
-                                helperText="Minimal length is 8 characters."
-                            />
-                            <Box py={1} />
-                            <Grid container>
-                                <Grid item xs>
-                                    Already have an account?
-                                    <Link
-                                        component={LinkRouter}
-                                        to="/login"
-                                    >
-                                        Login
-                                    </Link>
+                            <form onSubmit={formik.handleSubmit}>
+                                <TextField
+                                    error={formik.touched.fullname && Boolean(formik.errors.fullname)}
+                                    label="Fullname"
+                                    name="fullname"
+                                    type="text"
+                                    value={formik.values.fullname}
+                                    onChange={formik.handleChange}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    color="primary"
+                                    helperText={formik.touched.fullname && formik.errors.fullname}
+                                />
+                                <Box py={1} />
+                                <TextField
+                                    error={formik.touched.username && Boolean(formik.errors.username)}
+                                    label="Username"
+                                    name="username"
+                                    type="text"
+                                    value={formik.values.username}
+                                    onChange={formik.handleChange}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    color="primary"
+                                    helperText={formik.touched.username && formik.errors.username}
+                                />
+                                <Box py={1} />
+                                <TextField
+                                    error={formik.touched.email && Boolean(formik.errors.email)}
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    value={formik.values.email}
+                                    onChange={formik.handleChange}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    color="primary"
+                                    helperText={formik.touched.email && formik.errors.email}
+                                />
+                                <Box py={1} />
+                                <TextField
+                                    error={formik.touched.password && Boolean(formik.errors.password)}
+                                    label="Password"
+                                    name="password"
+                                    type="password"
+                                    value={formik.values.password}
+                                    onChange={formik.handleChange}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    color="primary"
+                                    helperText={formik.touched.password && formik.errors.password}
+                                />
+                                <Box py={1} />
+                                <Grid container>
+                                    <Grid item xs>
+                                        Already have an account?
+                                        <Link
+                                            component={LinkRouter}
+                                            to="/login"
+                                        >
+                                            Login
+                                        </Link>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                            <Box py={2} />
-                            <Button
-                                color="secondary"
-                                variant="contained"
-                                disableElevation
-                                fullWidth
-                            >
-                                Register
-                            </Button>
+                                <Box py={2} />
+                                <Button
+                                    color="secondary"
+                                    variant="contained"
+                                    type="submit"
+                                    disableElevation
+                                    fullWidth
+                                >
+                                    Register
+                                </Button>
+                            </form>
                         </Paper>
                     </Grid>
                     <Hidden xsDown>

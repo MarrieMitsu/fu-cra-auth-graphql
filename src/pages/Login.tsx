@@ -1,6 +1,7 @@
 // Packages
 import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { useFormik } from "formik";
 import React from "react";
 import { Link as LinkRouter } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -29,6 +30,15 @@ const useStyles = makeStyles((theme: Theme) =>
 // Login
 const Login: React.FC = () => {
     const classes = useStyles();
+    const formik = useFormik({
+        initialValues: {
+            usernameOrEmail: "",
+            password: ""
+        },
+        onSubmit: (val) => {
+            console.log("Submit data: ", val);
+        }
+    });
 
     return (
         <>
@@ -45,55 +55,64 @@ const Login: React.FC = () => {
                         <Paper
                             className={classes.formBox}
                         >
-                            <TextField 
-                                error={false}
-                                label="Username or email"
-                                type="text"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                color="primary"
-                                helperText=""
-                            />
-                            <Box py={1} />
-                            <TextField
-                                error={false}
-                                label="Password"
-                                type="password"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                color="primary"
-                                helperText=""
-                            />
-                            <Box py={1} />
-                            <Grid container>
-                                <Grid item xs>
-                                    <Link
-                                        component={LinkRouter}
-                                        to="/register"
-                                    >
-                                        Register
-                                    </Link>
+                            <form onSubmit={formik.handleSubmit}>
+                                <TextField 
+                                    error={formik.touched.usernameOrEmail && Boolean(formik.errors.usernameOrEmail)}
+                                    label="Username or email"
+                                    name="usernameOrEmail"
+                                    type="text"
+                                    value={formik.values.usernameOrEmail}
+                                    onChange={formik.handleChange}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    color="primary"
+                                    helperText={formik.touched.usernameOrEmail && formik.errors.usernameOrEmail}
+                                />
+                                <Box py={1} />
+                                <TextField
+                                    error={formik.touched.password && Boolean(formik.errors.password)}
+                                    label="Password"
+                                    name="password"
+                                    type="password"
+                                    value={formik.values.password}
+                                    onChange={formik.handleChange}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    color="primary"
+                                    helperText={formik.touched.password && formik.errors.password}
+                                />
+                                <Box py={1} />
+                                <Grid container>
+                                    <Grid item xs>
+                                        <Link
+                                            component={LinkRouter}
+                                            to="/register"
+                                        >
+                                            Register
+                                        </Link>
+                                    </Grid>
+                                    <Grid item xs className={classes.textRight}>
+                                        <Link
+                                            component={LinkRouter}
+                                            to="/forgot-password"
+                                        >
+                                            Forgot password
+                                        </Link>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs className={classes.textRight}>
-                                    <Link
-                                        component={LinkRouter}
-                                        to="/forgot-password"
-                                    >
-                                        Forgot password
-                                    </Link>
-                                </Grid>
-                            </Grid>
-                            <Box py={2} />
-                            <Button
-                                color="secondary"
-                                variant="contained"
-                                disableElevation
-                                fullWidth
-                            >
-                                Login
-                            </Button>
+                                <Box py={2} />
+                                <Button
+                                    color="secondary"
+                                    variant="contained"
+                                    disableElevation
+                                    type="submit"
+                                    fullWidth
+                                >
+                                    Login
+                                </Button>
+                            </form>
                         </Paper>
                     </Grid>
                     <Hidden xsDown>
