@@ -1,7 +1,7 @@
 // Packages
 import { Box, Button, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import React from "react";
+import React, { useState } from "react";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 
@@ -34,6 +34,12 @@ interface Values {
 // ProfileChangePassword
 const ProfileChangePassword: React.FC = () => {
     const classes = useStyles();
+    const [disable, setDisable] = useState(true);
+    const { oldPassword, newPassword, confirmNewPassword } = {
+        oldPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+    }
 
     return (
         <>
@@ -43,14 +49,16 @@ const ProfileChangePassword: React.FC = () => {
             <Box mt={3} className={classes.box}>
                 <Formik
                     initialValues={{
-                        oldPassword: "",
-                        newPassword: "",
-                        confirmNewPassword: ""
+                        oldPassword,
+                        newPassword,
+                        confirmNewPassword,
                     }}
                     validationSchema={Yup.object({
                         oldPassword: Yup.string(),
                         newPassword: Yup.string(),
-                        confirmNewPassword: Yup.string(),
+                        confirmNewPassword: Yup.string().test("password-match", "Password must match", function (val) {
+                            return this.parent.newPassword === val;
+                        }).required("requried"),
                     })}
                     onSubmit={(
                         val: Values,
@@ -61,6 +69,9 @@ const ProfileChangePassword: React.FC = () => {
                 >
                     {formik => (
                         <form onSubmit={formik.handleSubmit}>
+                            {formik.values.oldPassword !== oldPassword && formik.values.newPassword !== newPassword && formik.values.confirmNewPassword !== confirmNewPassword
+                                ? setDisable(false) 
+                                : setDisable(true)}
                             <TextField
                                 label="Old password"
                                 type="password"
@@ -101,6 +112,7 @@ const ProfileChangePassword: React.FC = () => {
                                 className={classes.success}
                                 variant="contained"
                                 type="submit"
+                                disabled={disable}
                                 disableElevation
                             >
                                 Update password

@@ -59,7 +59,9 @@ const ChangePassword: React.FC = () => {
                                 }}
                                 validationSchema={Yup.object({
                                     newPassword: Yup.string().required("required"),
-                                    confirmNewPassword: Yup.string().required("required")
+                                    confirmNewPassword: Yup.string().test("password-match", "Password must match", function (val) {
+                                        return this.parent.newPassword === val;
+                                    }).required("requried"),
                                 })}
                                 onSubmit={(
                                     val: Values,

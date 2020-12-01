@@ -1,8 +1,8 @@
 // Packages
 import { Box, Button, Grid, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Formik, FormikHelpers } from "formik";
-import React from "react";
+import { Formik, FormikHelpers, FormikProps } from "formik";
+import React, { useState } from "react";
 import * as Yup from "yup";
 
 // useStyles
@@ -41,6 +41,12 @@ interface Values {
 // ProfileGeneral
 const ProfileGeneral: React.FC = () => {
     const classes = useStyles();
+    const [disable, setDisable] = useState(true);
+    const { fullname, username, email } = {
+        fullname: "Hatako Kushikawa",
+        username: "Hatako",
+        email: "Hatako@protonmail.com",
+    }
     
     return (
         <>
@@ -50,9 +56,9 @@ const ProfileGeneral: React.FC = () => {
             <Box mt={3} className={classes.box}>
                 <Formik
                     initialValues={{
-                        fullname: "Hatako Kushikawa",
-                        username: "Hatako",
-                        email: "hatako@protonmail.com",
+                        fullname,
+                        username,
+                        email,
                     }}
                     validationSchema={Yup.object({
                         fullname: Yup.string().required("required"),
@@ -68,6 +74,9 @@ const ProfileGeneral: React.FC = () => {
                 >
                     {formik => (
                         <form onSubmit={formik.handleSubmit}>
+                            {formik.values.fullname !== fullname 
+                                ? setDisable(false) 
+                                : setDisable(true)}
                             <TextField
                                 label="Fullname"
                                 type="text"
@@ -106,31 +115,17 @@ const ProfileGeneral: React.FC = () => {
                                 disabled
                             />
                             <Box py={2} />
-                            <Grid
-                                container
-                                direction="row"
-                                spacing={3}
-                            >
-                                <Grid item>
+                            
                                     <Button
                                         className={classes.success}
                                         variant="contained"
                                         type="submit"
+                                        disabled={disable}
                                         disableElevation
                                     >
                                         Update
-                                    </Button>
-                                </Grid>
-                                <Grid item>
-                                    <Button
-                                        className={classes.error}
-                                        variant="contained"
-                                        disableElevation
-                                    >
-                                        Restore Change
-                                    </Button>
-                                </Grid>
-                            </Grid>
+                                </Button>
+                                
                         </form>
                     )}
                 </Formik>

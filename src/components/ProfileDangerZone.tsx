@@ -37,6 +37,12 @@ interface Values {
 const ProfileDangerZone: React.FC = () => {
     const classes = useStyles();
     const [delAccDialog, setDelAccDialog] = useState<boolean>(false);
+    const [disable, setDisable] = useState(true);
+    const { usernameOrEmail, verify, confirmPassword } = {
+        usernameOrEmail: "",
+        verify: "",
+        confirmPassword: "",
+    }
 
     const handleDelAccDialog = () => setDelAccDialog(!delAccDialog);
 
@@ -70,14 +76,14 @@ const ProfileDangerZone: React.FC = () => {
                     </DialogTitle>
                     <Formik
                         initialValues={{
-                            usernameOrEmail: "",
-                            verify: "",
-                            confirmPassword: "",
+                            usernameOrEmail,
+                            verify,
+                            confirmPassword,
                         }}
                         validationSchema={Yup.object({
-                            usernameOrEmail: Yup.string(),
-                            verify: Yup.string(),
-                            confirmPassword: Yup.string(),
+                            usernameOrEmail: Yup.string().required("requried"),
+                            verify: Yup.string().required("requried"),
+                            confirmPassword: Yup.string().required("requried"),
                         })}
                         onSubmit={(
                             val: Values,
@@ -88,6 +94,9 @@ const ProfileDangerZone: React.FC = () => {
                     >
                         {formik => (
                             <form onSubmit={formik.handleSubmit}>
+                                {formik.values.usernameOrEmail !== usernameOrEmail && formik.values.verify !== verify && formik.values.confirmPassword !== confirmPassword
+                                    ? setDisable(false)
+                                    : setDisable(true)}
                                 <DialogContent>
                                     <DialogContentText>
                                         Important! We will delete your account permanently, theres no way to restore it back
@@ -134,6 +143,7 @@ const ProfileDangerZone: React.FC = () => {
                                         className={classes.error}
                                         variant="contained"
                                         type="submit"
+                                        disabled={disable}
                                         size="small"
                                         disableElevation
                                     >

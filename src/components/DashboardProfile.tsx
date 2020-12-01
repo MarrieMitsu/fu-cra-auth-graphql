@@ -114,6 +114,9 @@ const DashboardProfile: React.FC = () => {
                         hidden 
                         id="photo-button" 
                         type="file" 
+                        onChange={(e) => {
+                            console.log(e.target.files);
+                        }}
                     />
                     <label htmlFor="photo-button">
                         <Tooltip title="Change photo">
@@ -149,7 +152,7 @@ const DashboardProfile: React.FC = () => {
                                     <Tab label="Danger Zone" />
                                 </Tabs>
                             </Hidden>
-                            <Hidden smDown>
+                            <Hidden xsDown>
                                 <Tabs
                                     className={classes.verticalTabs}
                                     orientation="vertical"

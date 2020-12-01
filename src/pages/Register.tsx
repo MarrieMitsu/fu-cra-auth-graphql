@@ -34,6 +34,7 @@ interface Values {
     username: string;
     email: string;
     password: string;
+    confirmPassword: string;
 }
 
 // Register
@@ -61,12 +62,16 @@ const Register: React.FC = () => {
                                     username: "",
                                     email: "",
                                     password: "",
+                                    confirmPassword: "",
                                 }}
                                 validationSchema={Yup.object({
                                     fullname: Yup.string().required("required"),
                                     username: Yup.string().required("required"),
                                     email: Yup.string().email("Format must be an email").required("required"),
                                     password: Yup.string().required("required"),
+                                    confirmPassword: Yup.string().test("password-match", "Password must match", function (val) {
+                                        return this.parent.password === val;
+                                    }).required("requried"),
                                 })}
                                 onSubmit={(
                                     val: Values,
@@ -123,6 +128,18 @@ const Register: React.FC = () => {
                                             {...formik.getFieldProps('password')}
                                             error={formik.touched.password && Boolean(formik.errors.password)}
                                             helperText={formik.touched.password && formik.errors.password}
+                                        />
+                                        <Box py={1} />
+                                        <TextField
+                                            label="Confirm password"
+                                            type="password"
+                                            variant="outlined"
+                                            size="small"
+                                            fullWidth
+                                            color="primary"
+                                            {...formik.getFieldProps('confirmPassword')}
+                                            error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+                                            helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
                                         />
                                         <Box py={1} />
                                         <Grid container>
