@@ -37,7 +37,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   updateUser?: Maybe<User>;
   changePassword?: Maybe<Scalars['Boolean']>;
-  deleteUser?: Maybe<Scalars['Boolean']>;
+  deleteUser?: Maybe<DeleteUserResponse>;
 };
 
 
@@ -53,7 +53,6 @@ export type MutationLoginArgs = {
 
 export type MutationUpdateUserArgs = {
   name: Scalars['String'];
-  id: Scalars['Int'];
 };
 
 
@@ -64,7 +63,7 @@ export type MutationChangePasswordArgs = {
 
 
 export type MutationDeleteUserArgs = {
-  id: Scalars['Int'];
+  input: DeleteUserInput;
 };
 
 export type UserResponse = {
@@ -92,6 +91,18 @@ export type LoginInput = {
   password: Scalars['String'];
 };
 
+export type DeleteUserResponse = {
+  __typename?: 'DeleteUserResponse';
+  errors?: Maybe<Array<FieldError>>;
+  delete: Scalars['Boolean'];
+};
+
+export type DeleteUserInput = {
+  unique: Scalars['String'];
+  verify: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type AuthErrorResponseFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'field' | 'message'>
@@ -112,6 +123,23 @@ export type AuthResponseFragment = (
 export type UserDataFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'name' | 'username' | 'email' | 'profileImage' | 'createdAt' | 'updatedAt'>
+);
+
+export type DeleteUserMutationVariables = Exact<{
+  input: DeleteUserInput;
+}>;
+
+
+export type DeleteUserMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteUser?: Maybe<(
+    { __typename?: 'DeleteUserResponse' }
+    & Pick<DeleteUserResponse, 'delete'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & AuthErrorResponseFragment
+    )>> }
+  )> }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -146,6 +174,19 @@ export type RegisterMutation = (
     { __typename?: 'UserResponse' }
     & AuthResponseFragment
   ) }
+);
+
+export type UpdateUserMutationVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type UpdateUserMutation = (
+  { __typename?: 'Mutation' }
+  & { updateUser?: Maybe<(
+    { __typename?: 'User' }
+    & UserDataFragment
+  )> }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -188,6 +229,41 @@ export const AuthResponseFragmentDoc = gql`
 }
     ${AuthErrorResponseFragmentDoc}
 ${UserDataFragmentDoc}`;
+export const DeleteUserDocument = gql`
+    mutation DeleteUser($input: DeleteUserInput!) {
+  deleteUser(input: $input) {
+    errors {
+      ...AuthErrorResponse
+    }
+    delete
+  }
+}
+    ${AuthErrorResponseFragmentDoc}`;
+export type DeleteUserMutationFn = Apollo.MutationFunction<DeleteUserMutation, DeleteUserMutationVariables>;
+
+/**
+ * __useDeleteUserMutation__
+ *
+ * To run a mutation, you first call `useDeleteUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteUserMutation, { data, loading, error }] = useDeleteUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<DeleteUserMutation, DeleteUserMutationVariables>) {
+        return Apollo.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument, baseOptions);
+      }
+export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
+export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
+export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($input: LoginInput!) {
   login(input: $input) {
@@ -281,6 +357,38 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($name: String!) {
+  updateUser(name: $name) {
+    ...UserData
+  }
+}
+    ${UserDataFragmentDoc}`;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, baseOptions);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
 export const MeDocument = gql`
     query Me {
   me {

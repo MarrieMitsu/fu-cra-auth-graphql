@@ -1,0 +1,8 @@
+mutation DeleteUser($input: DeleteUserInput!) {
+    deleteUser(input: $input) {
+        errors {
+            ...AuthErrorResponse
+        }
+        delete
+    }
+}

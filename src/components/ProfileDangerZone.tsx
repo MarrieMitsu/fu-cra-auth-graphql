@@ -1,10 +1,12 @@
 // Packages
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import React, { useState } from "react";
-import { ZoomTransition } from "./customTransition";
 import { Formik, FormikHelpers } from "formik";
+import React, { useState } from "react";
 import * as Yup from "yup";
+import { useDeleteUserMutation, useMeQuery } from "../generated/graphql";
+import { mapFieldError } from "../utils/mapFieldError";
+import { ZoomTransition } from "./customTransition";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -35,6 +37,8 @@ interface Values {
 
 // ProfileDangerZone
 const ProfileDangerZone: React.FC = () => {
+    const [deleteUserMutation] = useDeleteUserMutation();
+    const { data: meData } = useMeQuery();
     const classes = useStyles();
     const [delAccDialog, setDelAccDialog] = useState<boolean>(false);
     const [disable, setDisable] = useState(true);
@@ -81,15 +85,32 @@ const ProfileDangerZone: React.FC = () => {
                             confirmPassword,
                         }}
                         validationSchema={Yup.object({
-                            usernameOrEmail: Yup.string().required("requried"),
-                            verify: Yup.string().required("requried"),
-                            confirmPassword: Yup.string().required("requried"),
+                            usernameOrEmail: Yup.string().required("required"),
+                            verify: Yup.string().required("required").test("verify-match", "Input not match", function(val) {
+                                return val === "delete-account";
+                            }),
+                            confirmPassword: Yup.string().required("required"),
                         })}
-                        onSubmit={(
-                            val: Values,
-                            { setSubmitting }: FormikHelpers<Values>
-                        ) => {
+                        onSubmit={async (val: Values, { setErrors }: FormikHelpers<Values>) => {
                             console.log("Submit data: ", val);
+                            const response = await deleteUserMutation({
+                                variables: {
+                                    input: {
+                                        unique: val.usernameOrEmail,
+                                        verify: val.verify,
+                                        password: val.confirmPassword
+                                    }
+                                },
+                                update: (cache) => {
+                                    cache.evict({id: "User:" + meData?.me?.id});
+                                }
+                            });
+
+                            if (response.data?.deleteUser?.errors) {
+                                setErrors(mapFieldError(response.data.deleteUser.errors));
+                            } else {
+                                console.log(response.data?.deleteUser);
+                            }
                         }}
                     >
                         {formik => (
@@ -139,7 +160,6 @@ const ProfileDangerZone: React.FC = () => {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button
-                                        onClick={handleDelAccDialog}
                                         className={classes.error}
                                         variant="contained"
                                         type="submit"

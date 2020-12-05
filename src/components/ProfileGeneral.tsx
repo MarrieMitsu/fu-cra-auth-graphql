@@ -4,7 +4,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Formik, FormikHelpers } from "formik";
 import React, { useState } from "react";
 import * as Yup from "yup";
-import { useMeQuery } from "../generated/graphql";
+import { MeDocument, MeQuery, useMeQuery, useUpdateUserMutation } from "../generated/graphql";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,6 +41,7 @@ interface Values {
 
 // ProfileGeneral
 const ProfileGeneral: React.FC = () => {
+    const [updateUserMutation] = useUpdateUserMutation();
     const { data } = useMeQuery();
     const classes = useStyles();
     const [disable, setDisable] = useState(true);
@@ -73,11 +74,29 @@ const ProfileGeneral: React.FC = () => {
                         username: Yup.string().required("required"),
                         email: Yup.string().email("Format must be an email").required("required"),
                     })}
-                    onSubmit={(
-                        val: Values,
-                        { setSubmitting }: FormikHelpers<Values>
-                    ) => {
-                        console.log("Submit data: ", val);
+                    onSubmit={async (val: Values, { setErrors }: FormikHelpers<Values>) => {
+                        const response = await updateUserMutation({
+                            variables: {
+                                name: val.fullname
+                            },
+                            update: (cache, { data }) => {
+                                if (!data) {
+                                    return null;
+                                }
+                                cache.writeQuery<MeQuery>({
+                                    query: MeDocument,
+                                    data: {
+                                        me: data.updateUser
+                                    }
+                                });
+                            }
+                        });
+
+                        if (response.data?.updateUser) {
+                            console.log("Update success");
+                        } else {
+                            console.log("Update error");
+                        }
                     }}
                 >
                     {formik => (
