@@ -163,7 +163,7 @@ const ProfileGeneral: React.FC = () => {
                                 className={classes.success}
                                 variant="contained"
                                 type="submit"
-                                disabled={disable}
+                                disabled={disable || formik.isSubmitting}
                                 disableElevation
                             >
                                 Update

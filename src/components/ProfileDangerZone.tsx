@@ -103,12 +103,29 @@ const ProfileDangerZone: React.FC = () => {
                                         password: val.confirmPassword
                                     }
                                 },
-                                update: (cache) => {
-                                    cache.evict({id: "User:" + meData?.me?.id});
+                                update: (cache, { data }) => {
+                                    if (data?.deleteUser?.delete) {
+                                        cache.evict({id: "User:" + meData?.me?.id});
+                                    }
                                 }
                             });
 
-                            if (response.data?.deleteUser?.errors) {
+                            if (!response.data?.deleteUser) {
+                                enqueueSnackbar("Something wrong with the server!", {
+                                    variant: "error",
+                                    action: key => (
+                                        <>
+                                            <IconButton
+                                                onClick={() => {
+                                                    closeSnackbar(key);
+                                                }}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </>
+                                    )
+                                });
+                            } else if (response.data?.deleteUser?.errors) {
                                 setErrors(mapFieldError(response.data.deleteUser.errors));
                             } else {
                                 enqueueSnackbar("Account deleted!", {
@@ -178,7 +195,7 @@ const ProfileDangerZone: React.FC = () => {
                                         className={classes.error}
                                         variant="contained"
                                         type="submit"
-                                        disabled={disable}
+                                        disabled={disable || formik.isSubmitting}
                                         size="small"
                                         disableElevation
                                     >

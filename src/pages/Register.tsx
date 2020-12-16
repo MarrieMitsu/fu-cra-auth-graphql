@@ -7,6 +7,7 @@ import { Link as LinkRouter, RouteComponentProps } from "react-router-dom";
 import * as Yup from "yup";
 import Navbar from "../components/Navbar";
 import { MeDocument, MeQuery, useRegisterMutation } from "../generated/graphql";
+import { accessToken } from "../utils/accessToken";
 import { mapFieldError } from "../utils/mapFieldError";
 
 // useStyles
@@ -102,7 +103,7 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
                                     if (response.data?.register.errors) {
                                         setErrors(mapFieldError(response.data.register.errors));
                                     } else {
-                                        history.push('/dashboard');
+                                        accessToken.setAccessToken(response.data?.register.accessToken);
                                     }
                                 }}
                             >

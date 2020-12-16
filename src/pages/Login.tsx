@@ -91,7 +91,6 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
                                         setErrors(mapFieldError(response.data.login.errors));
                                     } else {
                                         accessToken.setAccessToken(response.data?.login.accessToken);
-                                        history.push('/dashboard');
                                     }
                                 }}
                             >
