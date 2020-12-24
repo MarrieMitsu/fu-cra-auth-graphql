@@ -1,11 +1,13 @@
 // Packages
 import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Formik, FormikHelpers } from "formik";
 import React from "react";
 import { Link as LinkRouter } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
+import Navbar from "../components/Navbar";
+import { useForgotPasswordMutation } from "../generated/graphql";
+import { mapFieldError } from "../utils/mapFieldError";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -36,6 +38,7 @@ interface Values {
 // ForgotPassword
 const ForgotPassword: React.FC = () => {
     const classes = useStyles();
+    const [forgotPasswordMutation] = useForgotPasswordMutation();
 
     return (
         <>
@@ -59,26 +62,39 @@ const ForgotPassword: React.FC = () => {
                                 validationSchema={Yup.object({
                                     email: Yup.string().email("Format must be an email").required("required")
                                 })}
-                                onSubmit={(
-                                    val: Values,
-                                    { setSubmitting }: FormikHelpers<Values>
-                                ) => {
-                                    console.log("Submit data: ", val);
+                                onSubmit={async (val: Values, { setErrors, setStatus }: FormikHelpers<Values>) => {
+                                    const response = await forgotPasswordMutation({
+                                        variables: {
+                                            email: val.email
+                                        }
+                                    });
+
+                                    if (response.data?.forgotPassword.errors) {
+                                        setErrors(mapFieldError(response.data.forgotPassword.errors));
+                                    } else {
+                                        setStatus(true);
+                                    }
                                 }}
                             >
                                 {formik => (
                                     <form onSubmit={formik.handleSubmit}>
-                                        <TextField
-                                            label="Email"
-                                            type="email"
-                                            variant="outlined"
-                                            size="small"
-                                            fullWidth
-                                            color="primary"
-                                            {...formik.getFieldProps('email')}
-                                            error={formik.touched.email && Boolean(formik.errors.email)}
-                                            helperText={formik.touched.email && formik.errors.email}
-                                        />
+                                        {formik.status ? (
+                                            <Typography variant="h5" color="secondary">
+                                                We sent a recovery link to you at {formik.values.email}
+                                            </Typography>
+                                        ) : (
+                                            <TextField
+                                                label="Email"
+                                                type="email"
+                                                variant="outlined"
+                                                size="small"
+                                                fullWidth
+                                                color="primary"
+                                                {...formik.getFieldProps('email')}
+                                                error={formik.touched.email && Boolean(formik.errors.email)}
+                                                helperText={formik.touched.email && formik.errors.email}
+                                            />
+                                        )}
                                         <Box py={1} />
                                         <Grid container>
                                             <Grid item xs>
@@ -90,17 +106,41 @@ const ForgotPassword: React.FC = () => {
                                                     Login
                                                 </Link>
                                             </Grid>
+                                            {formik.status ? (
+                                                <Grid 
+                                                    item 
+                                                    xs 
+                                                    className={classes.textRight}
+                                                >
+                                                    <Link
+                                                        component="button"
+                                                        onClick={() => {
+                                                            formik.setStatus(false);
+                                                            formik.resetForm({
+                                                                values: {
+                                                                    email: "",
+                                                                }
+                                                            });
+                                                        }}
+                                                    >
+                                                        Resend recovery link
+                                                    </Link>
+                                                </Grid>
+                                            ) : null}
                                         </Grid>
                                         <Box py={2} />
-                                        <Button
-                                            color="secondary"
-                                            variant="contained"
-                                            type="submit"
-                                            disableElevation
-                                            fullWidth
-                                        >
-                                            Reset password
-                                        </Button>
+                                        {formik.status ? null : (
+                                            <Button
+                                                color="secondary"
+                                                variant="contained"
+                                                type="submit"
+                                                disabled={formik.isSubmitting}
+                                                disableElevation
+                                                fullWidth
+                                            >
+                                                Reset password
+                                            </Button>
+                                        )}
                                     </form>
                                 )}
                             </Formik>

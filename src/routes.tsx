@@ -56,7 +56,7 @@ const Router: React.FC = () => {
                     needAuth={false}
                     isAuthenticated={Boolean(data?.me)}
                     exact
-                    path="/reset-password/:token"
+                    path="/reset-password"
                     component={ResetPassword}
                 />
             </Switch>

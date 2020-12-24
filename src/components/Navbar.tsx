@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { Link as LinkRouter } from "react-router-dom";
 import { useLogoutMutation } from "../generated/graphql";
 import { AccessToken } from "../utils/accessToken";
+import { IsLogin } from "../utils/isLogin";
 import { SlideTransition } from "./customTransition";
 
 // useStyles
@@ -76,9 +77,9 @@ const Navbar: React.FC<NavbarProps> = ({login}) => {
                                 <MenuItem 
                                     onClick={async () => {
                                         await logoutMutation();
-                                        AccessToken.setAccessToken("");
+                                        AccessToken.setAccessToken(null);
                                         await client.resetStore();
-
+                                        IsLogin.setLogin(false);
                                     }}
                                 >
                                     Logout

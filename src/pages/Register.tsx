@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import Navbar from "../components/Navbar";
 import { MeDocument, MeQuery, useRegisterMutation } from "../generated/graphql";
 import { AccessToken } from "../utils/accessToken";
+import { IsLogin } from "../utils/isLogin";
 import { mapFieldError } from "../utils/mapFieldError";
 
 // useStyles
@@ -104,6 +105,7 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
                                         setErrors(mapFieldError(response.data.register.errors));
                                     } else {
                                         AccessToken.setAccessToken(response.data?.register.accessToken);
+                                        IsLogin.setLogin(true);
                                     }
                                 }}
                             >

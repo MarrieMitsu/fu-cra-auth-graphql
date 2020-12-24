@@ -3,6 +3,7 @@ import { Box, Button, Container, Grid, Hidden, Paper, TextField, Typography } fr
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Formik, FormikHelpers } from "formik";
 import React from "react";
+import { RouteComponentProps } from "react-router-dom";
 import * as Yup from "yup";
 import Navbar from "../components/Navbar";
 
@@ -34,8 +35,10 @@ interface Values {
 }
 
 // ResetPassword
-const ResetPassword: React.FC = () => {
+const ResetPassword: React.FC<RouteComponentProps> = ({ location }) => {
     const classes = useStyles();
+    const searchParams = new URLSearchParams(location.search);
+    console.log(searchParams.get("signature"));
 
     return (
         <>
@@ -61,11 +64,9 @@ const ResetPassword: React.FC = () => {
                                     newPassword: Yup.string().required("required"),
                                     confirmNewPassword: Yup.string().test("password-match", "Password must match", function (val) {
                                         return this.parent.newPassword === val;
-                                    }).required("requried"),
+                                    }).required("required"),
                                 })}
-                                onSubmit={(
-                                    val: Values,
-                                    { setSubmitting }: FormikHelpers<Values>
+                                onSubmit={async (val: Values,{ setErrors }: FormikHelpers<Values>
                                 ) => {
                                     console.log("Submit data: ", val);
                                 }}

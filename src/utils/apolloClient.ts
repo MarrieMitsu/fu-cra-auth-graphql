@@ -3,6 +3,7 @@ import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, Observable } from '@
 import { onError } from "@apollo/client/link/error";
 import jwtDecode from 'jwt-decode';
 import { AccessToken } from './accessToken';
+import { IsLogin } from './isLogin';
 
 // Types
 type RefreshTokenResponseObject = {
@@ -35,7 +36,7 @@ const httpLink = new HttpLink({
 // Refresh link
 const refreshLink = new ApolloLink((operation, forward) => {
     return new Observable(observer => {
-        if (!isTokenValid(AccessToken.value)) {
+        if (!isTokenValid(AccessToken.value) && IsLogin.value()) {
             fetch("http://localhost:4000/api/auth/refresh_token", {
                 method: "GET",
                 credentials: "include",
@@ -74,7 +75,6 @@ const authLink = new ApolloLink((operation, forward) => {
             authorization: AccessToken.value ? `Bearer ${AccessToken.value}` : "",
         }
     }));
-
     return forward(operation);
 });
 

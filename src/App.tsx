@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import Router from "./routes";
 import { AccessToken } from "./utils/accessToken";
 import customTheme from "./utils/customTheme";
+import { IsLogin } from "./utils/isLogin";
 
 // App
 const App: React.FC = () => {
@@ -15,13 +16,18 @@ const App: React.FC = () => {
 				method: "GET",
 				credentials: "include",
 			});
+
 			const { accessToken } = await response.json();
 			AccessToken.setAccessToken(accessToken);
 			setTimeout(() => {
 				setLoading(false);
 			}, 500);
 		}
-		refreshToken();
+		if (IsLogin.value()) {
+			refreshToken();
+		} else {
+			setLoading(false);
+		}
 	}, []);
 
 	return (

@@ -4,7 +4,7 @@ interface AccessTokenProps {
 }
 
 export const AccessToken: AccessTokenProps = {
-    value: "",
+    value: null,
     setAccessToken: function (val) {
         AccessToken.value = val;
     },

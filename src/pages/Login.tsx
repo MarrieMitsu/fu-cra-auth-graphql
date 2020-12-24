@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import Navbar from "../components/Navbar";
 import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
 import { AccessToken } from "../utils/accessToken";
+import { IsLogin } from "../utils/isLogin";
 import { mapFieldError } from "../utils/mapFieldError";
 
 // useStyles
@@ -91,6 +92,7 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
                                         setErrors(mapFieldError(response.data.login.errors));
                                     } else {
                                         AccessToken.setAccessToken(response.data?.login.accessToken);
+                                        IsLogin.setLogin(true);
                                     }
                                 }}
                             >
