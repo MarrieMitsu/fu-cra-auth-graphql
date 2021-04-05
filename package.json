@@ -66,6 +66,7 @@
     "@types/js-cookie": "^2.2.6",
     "@types/jwt-decode": "^3.1.0",
     "@types/react-router-dom": "^5.1.6",
-    "@types/yup": "^0.29.9"
+    "@types/yup": "^0.29.9",
+    "react-refresh": "^0.10.0"
   }
 }

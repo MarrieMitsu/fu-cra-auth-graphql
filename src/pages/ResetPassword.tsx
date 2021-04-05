@@ -3,7 +3,7 @@ import { Box, Button, Container, Grid, Hidden, Paper, TextField, Typography } fr
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Formik, FormikHelpers } from "formik";
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Redirect, Route, RouteComponentProps } from "react-router-dom";
 import * as Yup from "yup";
 import Navbar from "../components/Navbar";
 
@@ -35,11 +35,15 @@ interface Values {
 }
 
 // ResetPassword
-const ResetPassword: React.FC<RouteComponentProps> = ({ location }) => {
+const ResetPassword: React.FC<RouteComponentProps> = ({ location, history }) => {
     const classes = useStyles();
     const searchParams = new URLSearchParams(location.search);
-    console.log(searchParams.get("signature"));
+    const signature = searchParams.get("signature");
 
+    if (!signature) {
+        return <Redirect to="/login" />
+    }
+        
     return (
         <>
             <Navbar />
