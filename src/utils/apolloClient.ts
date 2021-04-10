@@ -1,8 +1,8 @@
 // Packages
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, Observable } from '@apollo/client';
 import { onError } from "@apollo/client/link/error";
-import jwtDecode from 'jwt-decode';
 import { AccessToken } from './accessToken';
+import { isTokenValid } from './isTokenValid';
 import { IsLogin } from './isLogin';
 
 // Types
@@ -10,21 +10,6 @@ type RefreshTokenResponseObject = {
     accessToken?: string;
     message?: string;
     status?: boolean;
-}
-
-// isTokenValid
-const isTokenValid = (token: string | null | undefined): boolean => {
-    if (token) {
-        const { exp }:any = jwtDecode(token);
-        if (Date.now() >= exp * 1000) {
-            return false;
-        } else {
-            return true;
-        }
-    } else {
-        return false;
-    }
-
 }
 
 // Http link

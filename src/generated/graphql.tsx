@@ -13,21 +13,26 @@ export type Scalars = {
   Float: number;
 };
 
-export type Query = {
-  __typename?: 'Query';
-  users?: Maybe<Array<User>>;
-  me?: Maybe<User>;
+export type ChangePasswordInput = {
+  oldPassword: Scalars['String'];
+  newPassword: Scalars['String'];
 };
 
-export type User = {
-  __typename?: 'User';
-  id: Scalars['Int'];
-  name: Scalars['String'];
-  username: Scalars['String'];
-  email: Scalars['String'];
-  profileImage?: Maybe<Scalars['String']>;
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
+export type DeleteUserInput = {
+  unique: Scalars['String'];
+  verify: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
+};
+
+export type LoginInput = {
+  unique: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type Mutation = {
@@ -36,6 +41,7 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   forgotPassword: UserResponse;
+  resetPassword: UserResponse;
   updateUser?: Maybe<UserResponse>;
   changeUserPassword?: Maybe<UserResponse>;
   deleteUser?: Maybe<UserResponse>;
@@ -57,6 +63,12 @@ export type MutationForgotPasswordArgs = {
 };
 
 
+export type MutationResetPasswordArgs = {
+  signature: Scalars['String'];
+  newPassword: Scalars['String'];
+};
+
+
 export type MutationUpdateUserArgs = {
   name: Scalars['String'];
 };
@@ -71,20 +83,10 @@ export type MutationDeleteUserArgs = {
   input: DeleteUserInput;
 };
 
-export type UserResponse = {
-  __typename?: 'UserResponse';
-  errors?: Maybe<Array<FieldError>>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<Scalars['Boolean']>;
-  status?: Maybe<Scalars['Boolean']>;
-  user?: Maybe<User>;
-  accessToken?: Maybe<Scalars['String']>;
-};
-
-export type FieldError = {
-  __typename?: 'FieldError';
-  field: Scalars['String'];
-  message: Scalars['String'];
+export type Query = {
+  __typename?: 'Query';
+  users?: Maybe<Array<User>>;
+  me?: Maybe<User>;
 };
 
 export type RegisterInput = {
@@ -94,20 +96,25 @@ export type RegisterInput = {
   password: Scalars['String'];
 };
 
-export type LoginInput = {
-  unique: Scalars['String'];
-  password: Scalars['String'];
+export type User = {
+  __typename?: 'User';
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  username: Scalars['String'];
+  email: Scalars['String'];
+  profileImage?: Maybe<Scalars['String']>;
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
-export type ChangePasswordInput = {
-  oldPassword: Scalars['String'];
-  newPassword: Scalars['String'];
-};
-
-export type DeleteUserInput = {
-  unique: Scalars['String'];
-  verify: Scalars['String'];
-  password: Scalars['String'];
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  errors?: Maybe<Array<FieldError>>;
+  delete?: Maybe<Scalars['Boolean']>;
+  update?: Maybe<Scalars['Boolean']>;
+  status?: Maybe<Scalars['Boolean']>;
+  user?: Maybe<User>;
+  accessToken?: Maybe<Scalars['String']>;
 };
 
 export type AuthErrorResponseFragment = (
@@ -214,6 +221,20 @@ export type RegisterMutation = (
   & { register: (
     { __typename?: 'UserResponse' }
     & AuthResponseFragment
+  ) }
+);
+
+export type ResetPasswordMutationVariables = Exact<{
+  newPassword: Scalars['String'];
+  signature: Scalars['String'];
+}>;
+
+
+export type ResetPasswordMutation = (
+  { __typename?: 'Mutation' }
+  & { resetPassword: (
+    { __typename?: 'UserResponse' }
+    & Pick<UserResponse, 'update'>
   ) }
 );
 
@@ -475,6 +496,39 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const ResetPasswordDocument = gql`
+    mutation ResetPassword($newPassword: String!, $signature: String!) {
+  resetPassword(newPassword: $newPassword, signature: $signature) {
+    update
+  }
+}
+    `;
+export type ResetPasswordMutationFn = Apollo.MutationFunction<ResetPasswordMutation, ResetPasswordMutationVariables>;
+
+/**
+ * __useResetPasswordMutation__
+ *
+ * To run a mutation, you first call `useResetPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResetPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resetPasswordMutation, { data, loading, error }] = useResetPasswordMutation({
+ *   variables: {
+ *      newPassword: // value for 'newPassword'
+ *      signature: // value for 'signature'
+ *   },
+ * });
+ */
+export function useResetPasswordMutation(baseOptions?: Apollo.MutationHookOptions<ResetPasswordMutation, ResetPasswordMutationVariables>) {
+        return Apollo.useMutation<ResetPasswordMutation, ResetPasswordMutationVariables>(ResetPasswordDocument, baseOptions);
+      }
+export type ResetPasswordMutationHookResult = ReturnType<typeof useResetPasswordMutation>;
+export type ResetPasswordMutationResult = Apollo.MutationResult<ResetPasswordMutation>;
+export type ResetPasswordMutationOptions = Apollo.BaseMutationOptions<ResetPasswordMutation, ResetPasswordMutationVariables>;
 export const UpdateUserDocument = gql`
     mutation UpdateUser($name: String!) {
   updateUser(name: $name) {
