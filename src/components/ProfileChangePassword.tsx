@@ -67,25 +67,50 @@ const ProfileChangePassword: React.FC = () => {
                         }),
                     })}
                     onSubmit={async ( val: Values, { setErrors, resetForm }: FormikHelpers<Values>) => {
-                        const response = await changeUserPasswordMutation({
-                            variables: {
-                                input: {
-                                    oldPassword: val.oldPassword,
-                                    newPassword: val.newPassword
+                        try {
+                            const response = await changeUserPasswordMutation({
+                                variables: {
+                                    input: {
+                                        oldPassword: val.oldPassword,
+                                        newPassword: val.newPassword
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                        if (response.data?.changeUserPassword?.errors) {
-                            setErrors(mapFieldError(response.data.changeUserPassword.errors));
-                        } else {
-                            resetForm({values: {
-                                oldPassword: "",
-                                newPassword: "",
-                                confirmNewPassword: "",
-                            }});
-                            enqueueSnackbar("Success change password", {
-                                variant: "success",
+                            if (response.data?.changeUserPassword?.errors) {
+                                setErrors(mapFieldError(response.data.changeUserPassword.errors));
+                            } else {
+                                resetForm({
+                                    values: {
+                                        oldPassword: "",
+                                        newPassword: "",
+                                        confirmNewPassword: "",
+                                    }
+                                });
+                                enqueueSnackbar("Success change password", {
+                                    variant: "success",
+                                    action: key => (
+                                        <>
+                                            <IconButton
+                                                onClick={() => {
+                                                    closeSnackbar(key);
+                                                }}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </>
+                                    )
+                                });
+                            }
+                        } catch (err) {
+                            let msg: string;
+                            if (err.message === "Failed to fetch") {
+                                msg = "Network errors";
+                            } else {
+                                msg = "Something wrong with the server";
+                            }
+                            enqueueSnackbar(msg, {
+                                variant: "error",
                                 action: key => (
                                     <>
                                         <IconButton

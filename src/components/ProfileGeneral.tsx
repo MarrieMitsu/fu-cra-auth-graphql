@@ -79,28 +79,51 @@ const ProfileGeneral: React.FC = () => {
                         email: Yup.string().email("Format must be an email").required("required"),
                     })}
                     onSubmit={async (val: Values, { setErrors }: FormikHelpers<Values>) => {
-                        const response = await updateUserMutation({
-                            variables: {
-                                name: val.fullname
-                            },
-                            update: (cache, { data }) => {
-                                if (!data) {
-                                    return null;
-                                }
-                                cache.writeQuery<MeQuery>({
-                                    query: MeDocument,
-                                    data: {
-                                        me: data.updateUser?.user,
+                        try {
+                            const response = await updateUserMutation({
+                                variables: {
+                                    name: val.fullname
+                                },
+                                update: (cache, { data }) => {
+                                    if (!data) {
+                                        return null;
                                     }
+                                    cache.writeQuery<MeQuery>({
+                                        query: MeDocument,
+                                        data: {
+                                            me: data.updateUser?.user,
+                                        }
+                                    });
+                                }
+                            });
+
+                            if (response.data?.updateUser?.errors) {
+                                setErrors(mapFieldError(response.data.updateUser.errors));
+                            } else {
+                                enqueueSnackbar("Update success", {
+                                    variant: "success",
+                                    action: key => (
+                                        <>
+                                            <IconButton
+                                                onClick={() => {
+                                                    closeSnackbar(key);
+                                                }}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </>
+                                    )
                                 });
                             }
-                        });
-
-                        if (response.data?.updateUser?.errors) {
-                            setErrors(mapFieldError(response.data.updateUser.errors));
-                        } else {
-                            enqueueSnackbar("Update success", {
-                                variant: "success",
+                        } catch (err) {
+                            let msg: string;
+                            if (err.message === "Failed to fetch") {
+                                msg = "Network errors";
+                            } else {
+                                msg = "Something wrong with the server";
+                            }
+                            enqueueSnackbar(msg, {
+                                variant: "error",
                                 action: key => (
                                     <>
                                         <IconButton

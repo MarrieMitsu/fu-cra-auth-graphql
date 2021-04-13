@@ -1,5 +1,6 @@
 // Packages
-import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
+import { Box, Button, IconButton, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
+import { Close as CloseIcon } from "@material-ui/icons";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Formik, FormikHelpers } from "formik";
 import React from "react";
@@ -10,6 +11,7 @@ import { MeDocument, MeQuery, useRegisterMutation } from "../generated/graphql";
 import { AccessToken } from "../utils/accessToken";
 import { IsLogin } from "../utils/isLogin";
 import { mapFieldError } from "../utils/mapFieldError";
+import { useSnackbar } from "notistack";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -45,6 +47,7 @@ interface Values {
 const Register: React.FC<RouteComponentProps> = ({ history }) => {
     const classes = useStyles();
     const [registerMutation] = useRegisterMutation();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     return (
         <>
@@ -79,33 +82,56 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
                                     }).required("requried"),
                                 })}
                                 onSubmit={ async (val: Values, { setErrors }: FormikHelpers<Values>) => {
-                                    const response = await registerMutation({
-                                        variables: {
-                                            input: {
-                                                name: val.fullname,
-                                                username: val.username,
-                                                email: val.email,
-                                                password: val.password,
-                                            }
-                                        },
-                                        update: (cache, { data }) => {
-                                            if (!data) {
-                                                return null;
-                                            }
-                                            cache.writeQuery<MeQuery>({
-                                                query: MeDocument,
-                                                data: {
-                                                    me: data?.register.user
+                                    try {
+                                        const response = await registerMutation({
+                                            variables: {
+                                                input: {
+                                                    name: val.fullname,
+                                                    username: val.username,
+                                                    email: val.email,
+                                                    password: val.password,
                                                 }
-                                            });
+                                            },
+                                            update: (cache, { data }) => {
+                                                if (!data) {
+                                                    return null;
+                                                }
+                                                cache.writeQuery<MeQuery>({
+                                                    query: MeDocument,
+                                                    data: {
+                                                        me: data?.register.user
+                                                    }
+                                                });
+                                            }
+                                        });
+
+                                        if (response.data?.register.errors) {
+                                            setErrors(mapFieldError(response.data.register.errors));
+                                        } else {
+                                            AccessToken.setAccessToken(response.data?.register.accessToken);
+                                            IsLogin.setLogin(true);
                                         }
-                                    });
-                                    
-                                    if (response.data?.register.errors) {
-                                        setErrors(mapFieldError(response.data.register.errors));
-                                    } else {
-                                        AccessToken.setAccessToken(response.data?.register.accessToken);
-                                        IsLogin.setLogin(true);
+                                    } catch (err) {
+                                        let msg: string;
+                                        if (err.message === "Failed to fetch") {
+                                            msg = "Network errors";
+                                        } else {
+                                            msg = "Something wrong with the server";
+                                        }
+                                        enqueueSnackbar(msg, {
+                                            variant: "error",
+                                            action: key => (
+                                                <>
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            closeSnackbar(key);
+                                                        }}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </>
+                                            )
+                                        });
                                     }
                                 }}
                             >

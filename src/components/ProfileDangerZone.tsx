@@ -95,41 +95,64 @@ const ProfileDangerZone: React.FC = () => {
                             confirmPassword: Yup.string().required("required"),
                         })}
                         onSubmit={async (val: Values, { setErrors }: FormikHelpers<Values>) => {
-                            const response = await deleteUserMutation({
-                                variables: {
-                                    input: {
-                                        unique: val.usernameOrEmail,
-                                        verify: val.verify,
-                                        password: val.confirmPassword
+                            try {
+                                const response = await deleteUserMutation({
+                                    variables: {
+                                        input: {
+                                            unique: val.usernameOrEmail,
+                                            verify: val.verify,
+                                            password: val.confirmPassword
+                                        }
+                                    },
+                                    update: (cache, { data }) => {
+                                        if (data?.deleteUser?.delete) {
+                                            cache.evict({ id: "User:" + meData?.me?.id });
+                                        }
                                     }
-                                },
-                                update: (cache, { data }) => {
-                                    if (data?.deleteUser?.delete) {
-                                        cache.evict({id: "User:" + meData?.me?.id});
-                                    }
-                                }
-                            });
-
-                            if (!response.data?.deleteUser) {
-                                enqueueSnackbar("Something wrong with the server!", {
-                                    variant: "error",
-                                    action: key => (
-                                        <>
-                                            <IconButton
-                                                onClick={() => {
-                                                    closeSnackbar(key);
-                                                }}
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        </>
-                                    )
                                 });
-                            } else if (response.data?.deleteUser?.errors) {
-                                setErrors(mapFieldError(response.data.deleteUser.errors));
-                            } else {
-                                enqueueSnackbar("Account deleted!", {
-                                    variant: "info",
+
+                                if (!response.data?.deleteUser) {
+                                    enqueueSnackbar("Something wrong with the server!", {
+                                        variant: "error",
+                                        action: key => (
+                                            <>
+                                                <IconButton
+                                                    onClick={() => {
+                                                        closeSnackbar(key);
+                                                    }}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </>
+                                        )
+                                    });
+                                } else if (response.data?.deleteUser?.errors) {
+                                    setErrors(mapFieldError(response.data.deleteUser.errors));
+                                } else {
+                                    enqueueSnackbar("Account deleted!", {
+                                        variant: "info",
+                                        action: key => (
+                                            <>
+                                                <IconButton
+                                                    onClick={() => {
+                                                        closeSnackbar(key);
+                                                    }}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </>
+                                        )
+                                    });
+                                }
+                            } catch (err) {
+                                let msg: string;
+                                if (err.message === "Failed to fetch") {
+                                    msg = "Network errors";
+                                } else {
+                                    msg = "Something wrong with the server";
+                                }
+                                enqueueSnackbar(msg, {
+                                    variant: "error",
                                     action: key => (
                                         <>
                                             <IconButton

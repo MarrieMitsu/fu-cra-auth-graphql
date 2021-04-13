@@ -90,18 +90,44 @@ const ResetPassword: React.FC<RouteComponentProps> = ({ location, history }) => 
                                 })}
                                 onSubmit={async (val: Values, _helper: FormikHelpers<Values>
                                 ) => {
-                                    const response = await resetPasswordMutation({
-                                        variables: {
-                                            signature,
-                                            newPassword: val.newPassword
+                                    try {
+                                        const response = await resetPasswordMutation({
+                                            variables: {
+                                                signature,
+                                                newPassword: val.newPassword
+                                            }
+                                        });
+                                        
+                                        if (response.data?.resetPassword.update) {
+                                            client.resetStore();
+                                            enqueueSnackbar("Reset Success", {
+                                                variant: "success",
+                                                action: key => {
+                                                    <>
+                                                        <IconButton
+                                                            onClick={() => {
+                                                                closeSnackbar(key);
+                                                            }}
+                                                        >
+                                                            <CloseIcon />
+                                                        </IconButton>
+                                                    </>
+                                                }
+                                            });
+                                            history.push('/login');
+                                        } else {
+                                            setIsValid(false);
                                         }
-                                    });
-                                    console.log(response);
-                                    if (response.data?.resetPassword.update) {
-                                        client.resetStore();
-                                        enqueueSnackbar("Reset Success", {
-                                            variant: "success",
-                                            action: key => {
+                                    } catch (err) {
+                                        let msg: string;
+                                        if (err.message === "Failed to fetch") {
+                                            msg = "Network errors";
+                                        } else {
+                                            msg = "Something wrong with the server";
+                                        }
+                                        enqueueSnackbar(msg, {
+                                            variant: "error",
+                                            action: key => (
                                                 <>
                                                     <IconButton
                                                         onClick={() => {
@@ -111,11 +137,8 @@ const ResetPassword: React.FC<RouteComponentProps> = ({ location, history }) => 
                                                         <CloseIcon />
                                                     </IconButton>
                                                 </>
-                                            }
+                                            )
                                         });
-                                        history.push('/login');
-                                    } else {
-                                        setIsValid(false);
                                     }
                                 }}
                             >

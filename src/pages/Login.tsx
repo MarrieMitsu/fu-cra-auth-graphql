@@ -1,5 +1,6 @@
 // Packages
-import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
+import { Box, Button, IconButton, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
+import { Close as CloseIcon } from "@material-ui/icons";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Formik, FormikHelpers } from "formik";
 import React from "react";
@@ -10,6 +11,7 @@ import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
 import { AccessToken } from "../utils/accessToken";
 import { IsLogin } from "../utils/isLogin";
 import { mapFieldError } from "../utils/mapFieldError";
+import { useSnackbar } from "notistack";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) => 
@@ -39,9 +41,10 @@ interface Values {
 }
 
 // Login
-const Login: React.FC<RouteComponentProps> = ({ history }) => {
+const Login: React.FC<RouteComponentProps> = () => {
     const classes = useStyles();
-    const [loginMutation] = useLoginMutation();
+    const [loginMutation, { error }] = useLoginMutation();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     return (
         <>
@@ -68,31 +71,54 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
                                     password: Yup.string().required("required")
                                 })}
                                 onSubmit={ async (val: Values, { setErrors }: FormikHelpers<Values>) => {
-                                    const response = await loginMutation({
-                                        variables: {
-                                            input: {
-                                                unique: val.usernameOrEmail,
-                                                password: val.password,
+                                    try {
+                                        const response = await loginMutation({
+                                            variables: {
+                                                input: {
+                                                    unique: val.usernameOrEmail,
+                                                    password: val.password,
+                                                },
                                             },
-                                        },
-                                        update: (cache, {data}) => {
-                                            if (!data) {
-                                                return null;
-                                            }
-                                            cache.writeQuery<MeQuery>({
-                                                query: MeDocument,
-                                                data: {
-                                                    me: data.login.user
+                                            update: (cache, { data }) => {
+                                                if (!data) {
+                                                    return null;
                                                 }
-                                            })
-                                        }
-                                    });
+                                                cache.writeQuery<MeQuery>({
+                                                    query: MeDocument,
+                                                    data: {
+                                                        me: data.login.user
+                                                    }
+                                                })
+                                            }
+                                        });
 
-                                    if (response.data?.login.errors) {
-                                        setErrors(mapFieldError(response.data.login.errors));
-                                    } else {
-                                        AccessToken.setAccessToken(response.data?.login.accessToken);
-                                        IsLogin.setLogin(true);
+                                        if (response.data?.login.errors) {
+                                            setErrors(mapFieldError(response.data.login.errors));
+                                        } else {
+                                            AccessToken.setAccessToken(response.data?.login.accessToken);
+                                            IsLogin.setLogin(true);
+                                        }
+                                    } catch (err) {
+                                        let msg: string;
+                                        if (err.message === "Failed to fetch") {
+                                            msg = "Network errors";
+                                        } else {
+                                            msg = "Something wrong with the server";
+                                        }
+                                        enqueueSnackbar(msg, {
+                                            variant: "error",
+                                            action: key => (
+                                                <>
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            closeSnackbar(key);
+                                                        }}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </>
+                                            )
+                                        });
                                     }
                                 }}
                             >

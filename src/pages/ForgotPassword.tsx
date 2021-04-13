@@ -1,5 +1,6 @@
 // Packages
-import { Box, Button, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
+import { Box, Button, IconButton, Container, Grid, Hidden, Link, Paper, TextField, Typography } from "@material-ui/core";
+import { Close as CloseIcon } from "@material-ui/icons";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Formik, FormikHelpers } from "formik";
 import React from "react";
@@ -8,6 +9,7 @@ import * as Yup from "yup";
 import Navbar from "../components/Navbar";
 import { useForgotPasswordMutation } from "../generated/graphql";
 import { mapFieldError } from "../utils/mapFieldError";
+import { useSnackbar } from "notistack";
 
 // useStyles
 const useStyles = makeStyles((theme: Theme) =>
@@ -39,6 +41,7 @@ interface Values {
 const ForgotPassword: React.FC = () => {
     const classes = useStyles();
     const [forgotPasswordMutation] = useForgotPasswordMutation();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     return (
         <>
@@ -63,16 +66,39 @@ const ForgotPassword: React.FC = () => {
                                     email: Yup.string().email("Format must be an email").required("required")
                                 })}
                                 onSubmit={async (val: Values, { setErrors, setStatus }: FormikHelpers<Values>) => {
-                                    const response = await forgotPasswordMutation({
-                                        variables: {
-                                            email: val.email
-                                        }
-                                    });
+                                    try {
+                                        const response = await forgotPasswordMutation({
+                                            variables: {
+                                                email: val.email
+                                            }
+                                        });
 
-                                    if (response.data?.forgotPassword.errors) {
-                                        setErrors(mapFieldError(response.data.forgotPassword.errors));
-                                    } else {
-                                        setStatus(true);
+                                        if (response.data?.forgotPassword.errors) {
+                                            setErrors(mapFieldError(response.data.forgotPassword.errors));
+                                        } else {
+                                            setStatus(true);
+                                        }
+                                    } catch (err) {
+                                        let msg: string;
+                                        if (err.message === "Failed to fetch") {
+                                            msg = "Network errors";
+                                        } else {
+                                            msg = "Something wrong with the server";
+                                        }
+                                        enqueueSnackbar(msg, {
+                                            variant: "error",
+                                            action: key => (
+                                                <>
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            closeSnackbar(key);
+                                                        }}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </>
+                                            )
+                                        });
                                     }
                                 }}
                             >
